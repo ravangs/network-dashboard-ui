@@ -1,0 +1,27 @@
+<div class="table-container">
+  <h1>Device Overview</h1>
+
+  <button mat-raised-button color="primary" (click)="goToAddDevice()">Add Device</button>
+
+  <mat-table [dataSource]="devices" class="mat-elevation-z8">
+
+    <ng-container matColumnDef="hostname">
+      <mat-header-cell *matHeaderCellDef> Hostname </mat-header-cell>
+      <mat-cell *matCellDef="let device"> {{ device.hostname }} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="bgpEnabled">
+      <mat-header-cell *matHeaderCellDef> BGP Enabled </mat-header-cell>
+      <mat-cell *matCellDef="let device"> {{ device.bgp.enabled }} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="ospfEnabled">
+      <mat-header-cell *matHeaderCellDef> OSPF Enabled </mat-header-cell>
+      <mat-cell *matCellDef="let device"> {{ device.ospf.enabled }} </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="navigateToDevice(row.hostname)"></mat-row>
+
+  </mat-table>
+</div>
