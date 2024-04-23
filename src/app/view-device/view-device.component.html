@@ -12,12 +12,12 @@
 
     <ng-container matColumnDef="bgpEnabled">
       <mat-header-cell *matHeaderCellDef> BGP Enabled </mat-header-cell>
-      <mat-cell *matCellDef="let device"> {{ device.bgp.enabled }} </mat-cell>
+      <mat-cell *matCellDef="let device"> {{ device.bgp ? 'True' : 'False' }} </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="ospfEnabled">
       <mat-header-cell *matHeaderCellDef> OSPF Enabled </mat-header-cell>
-      <mat-cell *matCellDef="let device"> {{ device.ospf.enabled }} </mat-cell>
+      <mat-cell *matCellDef="let device"> {{ device.ospf ? 'True' : 'False'}} </mat-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

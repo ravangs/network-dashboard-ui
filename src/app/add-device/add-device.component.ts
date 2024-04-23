@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { CommonModule } from '@angular/common';
 import {MatCheckboxModule} from '@angular/material/checkbox';
-
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-device',
@@ -23,77 +23,118 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     MatInputModule,
     MatFormFieldModule,
     CommonModule,
-    MatCheckboxModule
+    MatCheckboxModule,
   ]
 })
 export class AddDeviceComponent implements OnInit {
   isLinear = true;
-  firstFormGroup: FormGroup;
-  secondFormGroup: FormGroup;
-  thirdFormGroup: FormGroup;
-  fourthFormGroup: FormGroup;
+  routerDetailsGroup: FormGroup;
+  ospfConfGroup: FormGroup;
+  bgpConfGroup: FormGroup;
+  interfaceConfGroup: FormGroup;
+  ipv6ConfGroup: FormGroup;
 
-  ip_address = "abcd";
-
-  constructor(private _formBuilder: FormBuilder, private deviceService: DeviceService) {
-    this.firstFormGroup = this._formBuilder.group({
-      ip_address: [this.ip_address, Validators.required],
+  constructor(private _formBuilder: FormBuilder, private deviceService: DeviceService, private router: Router) {
+    this.routerDetailsGroup = this._formBuilder.group({
+      ip_address: ['', Validators.required],
       hostname: ['', Validators.required],
       username: ['', Validators.required],
       password: ['', Validators.required]
     });
 
-    this.secondFormGroup = this._formBuilder.group({
-      ospf_enabled: [false],
-      ospf_area: [''],
-      ospf_networks: ['']
+    this.ospfConfGroup = this._formBuilder.group({
+      ospfJson: [this.getDefaultOSPF(), Validators.required],    });
+
+    this.bgpConfGroup = this._formBuilder.group({
+      bgpJson: [this.getDefaultBGP(), Validators.required]
+
     });
 
-    this.thirdFormGroup = this._formBuilder.group({
-      bgp_enabled: [false],
-      bgp_asn: [''],
-      bgp_neighbors: this._formBuilder.array([])
+    this.interfaceConfGroup = this._formBuilder.group({
+      interfacesJson: [this.getDefaultInterfaces(), Validators.required],
     });
 
-    this.fourthFormGroup = this._formBuilder.group({
-      interface_name: [''],
-      interface_ip_address: [''],
-      interface_description: [''],
-      interface_status: [false]
+    this.ipv6ConfGroup = this._formBuilder.group({
+      ipv6Json: [this.getDefaultIpv6(), Validators.required],
     });
   }
+
+  getDefaultInterfaces(): string {
+    return JSON.stringify([{
+      "name": "InterfaceName",
+      "ip_address": "InterfaceIP",
+      "subnet_mask": "SubnetMask",
+      "status": "up/down"
+    }], null, 2);
+  }
+
+  getDefaultOSPF(): string {
+    return JSON.stringify({
+      "process_id": "OSPFProcessID",
+      "networks": [
+        {
+          "network_address": "NetworkAddress",
+          "subnet_mask": "SubnetMask",
+          "area": "Area"
+        }
+      ]
+    }, null, 2);
+  }
+
+  getDefaultIpv6(): string {
+    return JSON.stringify({
+        "ipv6": [{
+          "address": "IPv6Address",
+          "enabled": true,
+          "ospf_area": "OSPFIPv6Area"
+        }]
+    }, null, 2);
+  }
+
+  getDefaultBGP(): string {
+    return JSON.stringify({
+      "asn": "BGPASN",
+      "neighbors": [
+        {
+          "neighbor_ip": "NeighborIP",
+          "remote_as": "RemoteAS"
+        }
+      ],
+      "networks": [
+        {
+          "network": "NetworkAddress",
+          "mask": "SubnetMask"
+        }
+      ],
+      "maximum_paths": "MaxPaths"
+    }, null, 2);
+  }
+
 
   ngOnInit(): void {
   }
 
   onSubmit(): void {
-    if (this.firstFormGroup.valid && this.secondFormGroup.valid && this.thirdFormGroup.valid && this.fourthFormGroup.valid) {
+    if (this.routerDetailsGroup.valid && this.ospfConfGroup.valid && this.bgpConfGroup.valid && this.interfaceConfGroup.valid) {
       const deviceData: DeviceData = {
-        ip_address: this.firstFormGroup.value.ip_address,
-        hostname: this.firstFormGroup.value.hostname,
-        username: this.firstFormGroup.value.username,
-        password: this.firstFormGroup.value.password,
-        ospf: {
-          enabled: this.secondFormGroup.value.ospf_enabled,
-          area: this.secondFormGroup.value.ospf_area,
-          networks: this.secondFormGroup.value.ospf_networks.split(',').map((network: string) => network.trim())
-        },
-        bgp: {
-          enabled: this.thirdFormGroup.value.bgp_enabled,
-          asn: this.thirdFormGroup.value.bgp_asn,
-          neighbors: this.processNeighbors(this.thirdFormGroup.value.bgp_neighbors)
-        },
-        interfaces: [{
-          interface_name: this.fourthFormGroup.value.interface_name,
-          ip_address: this.fourthFormGroup.value.interface_ip_address,
-          description: this.fourthFormGroup.value.interface_description,
-          status: this.fourthFormGroup.value.interface_status ? 'up' : 'down'
-        }]
+        ip_address: this.routerDetailsGroup.value.ip_address,
+        hostname: this.routerDetailsGroup.value.hostname,
+        username: this.routerDetailsGroup.value.username,
+        password: this.routerDetailsGroup.value.password,
+        ospf: JSON.parse(this.ospfConfGroup.value.ospfJson),
+        bgp:JSON.parse(this.bgpConfGroup.value.bgpJson),
+        interfaces: JSON.parse(this.interfaceConfGroup.value.interfacesJson),
+        ipv6: JSON.parse(this.ipv6ConfGroup.value.ipv6Json)
       };
   
       this.deviceService.addDevice(deviceData).subscribe({
-        next: (response) => console.log('Device added successfully!', response),
-        error: (error) => console.error('Error adding device:', error)
+        next: (response) => {
+          console.log('Device added successfully!', response);
+          this.router.navigate(['/view-devices']);
+        },
+        error: (error) => {
+          console.error('Error adding device:', error);
+        }
       });
     }
   }
@@ -132,6 +173,12 @@ export interface NetworkInterface {
   status: string;
 }
 
+export interface IPv6Config {
+  address: string;
+  enabled: boolean;
+  ospf_area: string;
+}
+
 export interface DeviceData {
   ip_address: string;
   hostname: string;
@@ -139,6 +186,7 @@ export interface DeviceData {
   password: string;
   ospf: OSPFConfig;
   bgp: BGPConfig;
+  ipv6: IPv6Config[];
   interfaces: NetworkInterface[];
 }
 

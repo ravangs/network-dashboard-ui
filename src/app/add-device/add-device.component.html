@@ -1,6 +1,7 @@
 <mat-vertical-stepper [linear]="isLinear" #stepper>
-  <mat-step [stepControl]="firstFormGroup">
-    <form [formGroup]="firstFormGroup">
+  <!-- Router Details -->
+  <mat-step [stepControl]="routerDetailsGroup">
+    <form [formGroup]="routerDetailsGroup">
       <ng-template matStepLabel>Router Details</ng-template>
       <mat-form-field appearance="fill">
         <mat-label>IP Address</mat-label>
@@ -27,19 +28,13 @@
   </mat-step>
 
   <!-- OSPF Configuration -->
-  <mat-step [stepControl]="secondFormGroup">
-    <form [formGroup]="secondFormGroup">
+  <mat-step [stepControl]="ospfConfGroup">
+    <form [formGroup]="ospfConfGroup">
       <ng-template matStepLabel>OSPF Configuration</ng-template>
-      <mat-checkbox formControlName="ospf_enabled">OSPF Enabled</mat-checkbox>
       <br>
-      <mat-form-field appearance="fill">
-        <mat-label>OSPF Area</mat-label>
-        <input matInput formControlName="ospf_area">
-      </mat-form-field>
-      <br>
-      <mat-form-field appearance="fill">
-        <mat-label>OSPF Networks (comma separated)</mat-label>
-        <textarea matInput formControlName="ospf_networks"></textarea>
+      <mat-form-field appearance="fill" style="width: 100%;">
+        <mat-label>OSPF JSON</mat-label>
+        <textarea matInput formControlName="ospfJson"></textarea>
       </mat-form-field>
       <br>
       <button mat-button matStepperPrevious>Back</button>
@@ -48,45 +43,47 @@
   </mat-step>
 
   <!-- BGP Configuration -->
-  <mat-step [stepControl]="thirdFormGroup">
-    <form [formGroup]="thirdFormGroup">
+  <mat-step [stepControl]="bgpConfGroup">
+    <form [formGroup]="bgpConfGroup">
       <ng-template matStepLabel>BGP Configuration</ng-template>
-      <mat-checkbox formControlName="bgp_enabled">BGP Enabled</mat-checkbox>
       <br>
-      <mat-form-field appearance="fill">
-        <mat-label>BGP ASN</mat-label>
-        <input matInput formControlName="bgp_asn">
+      <mat-form-field appearance="fill" style="width: 100%;">
+        <mat-label>BGP JSON</mat-label>
+        <textarea matInput formControlName="bgpJson"></textarea>
       </mat-form-field>
       <br>
-      <!-- A sub-form or list management could be implemented for managing neighbors -->
       <button mat-button matStepperPrevious>Back</button>
       <button mat-button matStepperNext>Next</button>
     </form>
   </mat-step>
 
-  <!-- Interfaces Configuration -->
-  <mat-step [stepControl]="fourthFormGroup">
-    <form [formGroup]="fourthFormGroup">
+  <!-- Interface Configuration -->
+  <mat-step [stepControl]="interfaceConfGroup">
+    <form [formGroup]="interfaceConfGroup">
       <ng-template matStepLabel>Interface Configuration</ng-template>
-      <mat-form-field appearance="fill">
-        <mat-label>Interface Name</mat-label>
-        <input matInput formControlName="interface_name">
-      </mat-form-field>
       <br>
-      <mat-form-field appearance="fill">
-        <mat-label>Interface IP Address</mat-label>
-        <input matInput formControlName="interface_ip_address">
+      <mat-form-field appearance="fill" style="width: 100%;">
+        <mat-label>Interfaces JSON</mat-label>
+        <textarea matInput formControlName="interfacesJson"></textarea>
       </mat-form-field>
-      <br>
-      <mat-form-field appearance="fill">
-        <mat-label>Interface Description</mat-label>
-        <textarea matInput formControlName="interface_description"></textarea>
-      </mat-form-field>
-      <br>
-      <mat-checkbox formControlName="interface_status">Interface Up</mat-checkbox>
       <br>
       <button mat-button matStepperPrevious>Back</button>
-      <button mat-button (click)="onSubmit()">Finish</button>
+      <button mat-button matStepperNext>Next</button>
     </form>
   </mat-step>
+
+    <!-- IPv6 Configuration -->
+    <mat-step [stepControl]="ipv6ConfGroup">
+      <form [formGroup]="ipv6ConfGroup">
+        <ng-template matStepLabel>IPV6 Configuration</ng-template>
+        <br>
+        <mat-form-field appearance="fill" style="width: 100%;">
+          <mat-label>IPV6 JSON</mat-label>
+          <textarea matInput formControlName="ipv6Json"></textarea>
+        </mat-form-field>
+        <br>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button (click)="onSubmit()">Finish</button>
+      </form>
+    </mat-step>
 </mat-vertical-stepper>

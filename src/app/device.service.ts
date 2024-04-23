@@ -12,24 +12,28 @@ export class DeviceService {
 
   constructor(private http: HttpClient) {}
 
-  getDevices(): Observable<DeviceResponse> {
-    return this.http.get<DeviceResponse>(this.baseUrl);
+  getDevices(): Observable<GetDeviceResponse> {
+    return this.http.get<GetDeviceResponse>(this.baseUrl);
   }
 
-  getDeviceById(id: string): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/${id}`);
+  getDeviceById(hostname: string): Observable<GetDeviceResponse> {
+    return this.http.get<GetDeviceResponse>(`${this.baseUrl}/${hostname}`);
   }
 
   addDevice(device: any): Observable<any> {
     return this.http.post(this.baseUrl, device);
   }
 
-  updateDevice(id: string, device: any): Observable<any> {
-    return this.http.put(`${this.baseUrl}/${id}`, device);
+  updateDevice(hostname: string, device: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${hostname}`, device);
   }
 
 }
 
-export interface DeviceResponse {
+export interface GetDeviceResponse {
   devices: DeviceData[]
+}
+
+export interface GetDeviceResponse {
+  device: DeviceData
 }

@@ -5,12 +5,13 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideHttpClient } from '@angular/common/http';
 import { ViewDeviceComponent } from './view-device/view-device.component';
 import { AddDeviceComponent } from './add-device/add-device.component';
+import { EditDeviceComponent } from './edit-device/edit-device.component';
 
 export const routes: Routes = [
   { path: '', component: ViewDeviceComponent },
   { path: 'add-device', component: AddDeviceComponent },
   { path: 'view-devices', component: ViewDeviceComponent },
-  { path: 'edit-device/:id', component: AddDeviceComponent }
+  { path: 'edit-device/:hostname', component: EditDeviceComponent }
 ];
 
 export const appConfig: ApplicationConfig = {
